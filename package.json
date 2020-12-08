@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ghdna/athena-express.git"
+    "url": "git+https://github.com/PercaysoInform/athena-express.git"
   },
   "keywords": [
     "aws",
@@ -24,12 +24,6 @@
     "sql",
     "database"
   ],
-  "author": "Gary Arora (https://twitter.com/AroraGary)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ghdna/athena-express/issues"
-  },
-  "homepage": "https://github.com/ghdna/athena-express#readme",
   "devDependencies": {
     "aws-sdk": "^2.648.0",
     "chai": "^4.2.0",
