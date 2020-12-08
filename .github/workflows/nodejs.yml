@@ -1,0 +1,65 @@
+name: npm package pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  release:
+    types:
+      - published
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install packages
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://npm.pkg.github.com
+        scope: '@percaysoinform'
+        always-auth: true
+    - name: cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - run: |
+        npm ci
+        npm run build --if-present
+        npm test
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GLOBAL_REPOSITORY_TOKEN }}
+   
+  publish:
+    
+    if: github.event_name == 'release'
+
+    runs-on: ubuntu-latest
+
+    name: publish
+    needs: build
+    
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com
+          scope: '@percaysoinform'
+      - name: set the package version
+        run: npm version "$(jq .release.tag_name ${GITHUB_EVENT_PATH} -r)" --allow-same-version --git-tag-version=false
+      - name: publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
